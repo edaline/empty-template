@@ -18,8 +18,10 @@
   "homepage": "https://github.com/UnitedAgency/empty-template",
   "private": "true",
   "dependencies": {
-    "connect": "~3.2.0",
     "body-parser": "~1.8.3",
+    "connect": "~3.2.0",
+    "lodash": "^4.17.21",
+    "neo4j-driver": "^4.4.6",
     "serve-static": "~1.6.2"
   }
 }
