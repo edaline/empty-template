@@ -23,16 +23,19 @@ const {localData} = incoming_entries
 // take realtion and create via match to id
 
 //
-const q = (display_value) => (_.isString(display_value)) ? `"${display_value}"` : display_value
+const q = (display_value, date = false) => {
+  const result = (_.isString(display_value)) ? `"${display_value}"` : display_value
+  return result
+}
 
 const processInfoBox = ({parent, infobox}) => infobox.flatMap(field => processInfoField({parent, field})).join("")
 
 const processInfoField = ({parent, field}) =>
 {   
     let {field_model, name, display_value} = field
-    if (field_model == "location") return []
-    if (field_model == "date") return []
-    if (field_model == "int_range") return []
+    if (field_model == "location") {field_model = "entity";}
+    if (field_model == "date") {const json = JSON.stringify(display_value); display_value = json.replace(/"([^"]+)":/g, '$1:');}
+    if (field_model == "int_range") {console.log(field); }
     //Or instead of whitelisting do blacklisting
 
     let command
@@ -42,15 +45,21 @@ const processInfoField = ({parent, field}) =>
     if (field_model == "entity"){
       const {id, slug, name, instance_of} = localData[String(display_value)]
       const labels = instance_of.flatMap(num => localData[String(num)]?.name ? [localData[String(num)]?.name] : []).map(label => ":"+slugify(label)).join("")
-      console.log(labels)
-      console.log("field to relation", field, )  
+      //console.log(labels)
+      //console.log("field to relation yeah", field, )  
       //Map e1 labels
       return [`MERGE (${parent})-[:${field.name}]->(e_${field.name}_${id}${labels} {id: ${id}, slug: ${q(slug)}, name: ${q(name)}})\n`]
     } 
     //
     else {
         //Fix missing parenthesis for string bug
-        return [`SET ${parent}.${name} = ${q(display_value)}` + `\n`]
+        if(field_model == "date") return [`SET ${parent}.${slugify(name)} = date(${display_value})` + `\n`]
+        if(field_model == "int_range") { 
+        const {lte,gte} = display_value;
+        if(gte && lte) return [`SET ${parent}.${slugify(name)} = [${gte}, ${lte}]` + `\n`]; else return []; 
+      }
+
+        return [`SET ${parent}.${slugify(name)} = ${q(display_value)}` + `\n`]
     }
 }
 

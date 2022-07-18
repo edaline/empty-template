@@ -19,9 +19,13 @@
   "private": "true",
   "dependencies": {
     "body-parser": "~1.8.3",
+    "browserless": "^9.5.1",
     "connect": "~3.2.0",
+    "html-get": "^2.9.21",
     "lodash": "^4.17.21",
     "neo4j-driver": "^4.4.6",
-    "serve-static": "~1.6.2"
+    "puppeteer": "^15.4.0",
+    "serve-static": "~1.6.2",
+    "simple-wappalyzer": "^1.1.43"
   }
 }
